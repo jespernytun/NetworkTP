@@ -25,16 +25,19 @@ void client_udp(int port, char* hostname); /* creates a udp client */
 void server_udp(int port);
 
 
-void main (int argc, char **argv)
-{
+int main (int argc, char **argv) {
 	int c;
 	extern char *optarg;
 	extern int optind;
 	int nb_message = -1; /* number of messages to send, 10 by default */
 	int source = -1 ; /* 0=reciever, 1=source */
-   int udp = 0; /* We define a variable udp to handle the flag -u */
    
-	while ((c = getopt(argc, argv, "psu:n")) != -1) {
+   int udp = 0; /* We define a variable udp to handle the flag -u */
+   int port;
+   char* hostname;
+   
+   
+	while ((c = getopt(argc, argv, "psun:")) != -1) {
 		switch (c) {
 		case 'p':
 			if (source == 1) {
@@ -68,45 +71,56 @@ void main (int argc, char **argv)
 	}
 
 	if (source == -1) {
-		printf("usage: cmd [-p|-s][-n ##][-u]\n");
+		printf("usage: cmd [-p|-s][-n ##][-u]\n");     
 		exit(1) ;
 	}
 
-	if (source == 1) 
-		printf("We're on the source\n");
-   /* here we need to create a source UDP socket */
-
-   /*TODO
-     Create a local socket
-     Create the address of the socket we want to address
-     sendto(socket, pmsg, length)
-    */
-
    
-	else
-		printf("We're on the reciever\n");
-   /* here we need to create a reciever UDP socket */
-	if (nb_message != -1) {
-		if (source == 1)
-			printf("nb of messages to send : %d\n", nb_message);
-		else
+   if (nb_message != -1) {
+     if (source == 1)
+       printf("nb of messages to send : %d\n", nb_message);
+     else
 			printf("nb of messages to recieve : %d\n", nb_message);
-	} else {
-		if (source == 1) {
-			nb_message = 10 ;
-			printf("nb of messages to send = 10 by default\n");
-		} else
-		printf("nb of messages to send = inf\n");
+   } else {
+     if (source == 1) {
+       nb_message = 10 ;
+       printf("nb of messages to send = 10 by default\n");
+     } else
+       printf("nb of messages to recieve = inf\n");
+   }
+   
+   if (udp == 1) {
+     if (source == 1) {
+       printf("We're on the source\n");
+       
+       port = atoi(argv[argc-1]); /* We assign last argument as nb port*/
+       hostname = argv[argc-2]; /* We assign second to last argument as hostname*/
+       
+       client_udp(port, hostname);
 
-	}
+     } else { 
+       printf("We're on the reciever\n");
+
+       port = atoi(argv[argc-1]); /* We assign last argument as nb port */
+
+       server_udp(port); 
+     }
+            
+   } else {
+     printf("Sorry, TCP function not yet implemented\n");
+   }
+
+   return 0;
 }
+
 
 void client_udp(int port, char* hostname){
 
   int sock;
   struct sockaddr_in servaddr;
   socklen_t lg_adr_dist = sizeof(servaddr);
-  char M[30] = "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+  char M[30];
+  memset(M, 'a', 30);
   struct hostent* server; 
   
   /* creating the socket of designated specs */
@@ -127,9 +141,9 @@ void client_udp(int port, char* hostname){
   memcpy(&servaddr.sin_addr, server->h_addr, server->h_length);
 
   /* sending */
-  if (sendto(sock, M, 30, 0, (struct sockaddr_in*) &servaddr, lg_adr_dist) < 0){
+if (sendto(sock, M, 30, 0, (struct sockaddr *)&servaddr, lg_adr_dist) < 0) {
     perror("sendto");
-  }
+}
     
   close(sock);
 }
@@ -137,7 +151,7 @@ void client_udp(int port, char* hostname){
 
 void server_udp(int port){
   
-  int sock;
+  int sock, n;
   struct sockaddr_in servaddr, cliaddr;
   char pmsg[30];
   socklen_t lg_adr_dist = sizeof(cliaddr);
@@ -158,13 +172,13 @@ void server_udp(int port){
   }
 
   /* receptiom */
-  if (recvfrom(sock, pmsg, sizeof(pmsg), 0, (struct sockaddr *)&cliaddr, &lg_adr_dist) < 0) {
+  if ((n = recvfrom(sock, pmsg, sizeof(pmsg), 0, (struct sockaddr *)&cliaddr, &lg_adr_dist)) < 0) {
     perror("recvfrom");
     exit(1);
   }
   
-  printf("received: [%.*s]\n", 30, pmsg);
+  printf("received: [%.*s]\n", n, pmsg);
   
   close(sock);
-   
+
 }
