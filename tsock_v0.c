@@ -18,6 +18,7 @@ données du réseau */
 #include <stdio.h>
 /* pour la gestion des erreurs */
 #include <errno.h>
+#include <string.h>
 
 /* Prototypes */
 void client_udp(int port, char* hostname); /* creates a udp client */
@@ -126,7 +127,7 @@ void client_udp(int port, char* hostname){
   memcpy(&servaddr.sin_addr, server->h_addr, server->h_length);
 
   /* sending */
-  if (sendto(sock, M, 30, &servaddr, lg_adr_dist) < 0){
+  if (sendto(sock, M, 30, 0, (struct sockaddr_in*) &servaddr, lg_adr_dist) < 0){
     perror("sendto");
   }
     
@@ -134,8 +135,36 @@ void client_udp(int port, char* hostname){
 }
 
 
-void server_udp(){
+void server_udp(int port){
+  
+  int sock;
+  struct sockaddr_in servaddr, cliaddr;
+  char pmsg[30];
+  socklen_t lg_adr_dist = sizeof(cliaddr);
+  
+  if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
+    perror("socket");
+    exit(1);
+  }
+  
+  memset(&servaddr, 0, sizeof(servaddr));
+  servaddr.sin_port = htons(port);
+  servaddr.sin_family = AF_INET;
+  servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  
+  if (bind(sock, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
+    perror("bind");
+    exit(1);
+  }
 
-
-
+  /* receptiom */
+  if (recvfrom(sock, pmsg, sizeof(pmsg), 0, (struct sockaddr *)&cliaddr, &lg_adr_dist) < 0) {
+    perror("recvfrom");
+    exit(1);
+  }
+  
+  printf("received: [%.*s]\n", 30, pmsg);
+  
+  close(sock);
+   
 }
