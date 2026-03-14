@@ -126,7 +126,6 @@ void client_udp(int port, char* hostname){
   memcpy(&servaddr.sin_addr, server->h_addr, server->h_length);
 
   /* sending */
-
   if (sendto(sock, M, 30, &servaddr, lg_adr_dist) < 0){
     perror("sendto");
   }
