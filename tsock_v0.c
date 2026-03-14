@@ -1,0 +1,142 @@
+
+/* librairie standard ... */
+#include <stdlib.h>
+/* pour getopt */
+#include <unistd.h>
+/* déclaration des types de base */
+#include <sys/types.h>
+/* constantes relatives aux domaines, types et protocoles */
+#include <sys/socket.h>
+/* constantes et structures propres au domaine UNIX */
+#include <sys/un.h>
+/* constantes et structures propres au domaine INTERNET */
+#include <netinet/in.h>
+/* structures retournées par les fonctions de gestion de la base de
+données du réseau */
+#include <netdb.h>
+/* pour les entrées/sorties */
+#include <stdio.h>
+/* pour la gestion des erreurs */
+#include <errno.h>
+
+/* Prototypes */
+void client_udp(int port, char* hostname); /* creates a udp client */
+void server_udp(int port);
+
+
+void main (int argc, char **argv)
+{
+	int c;
+	extern char *optarg;
+	extern int optind;
+	int nb_message = -1; /* number of messages to send, 10 by default */
+	int source = -1 ; /* 0=reciever, 1=source */
+   int udp = 0; /* We define a variable udp to handle the flag -u */
+   
+	while ((c = getopt(argc, argv, "psu:n")) != -1) {
+		switch (c) {
+		case 'p':
+			if (source == 1) {
+				printf("usage: cmd [-p|-s][-n ##][-u]\n");
+				exit(1);
+			}
+			source = 0;
+			break;
+
+		case 's':
+			if (source == 0) {
+				printf("usage: cmd [-p|-s][-n ##][-u]\n");
+				exit(1) ;
+			}
+			source = 1;
+			break;
+
+		case 'n':
+			nb_message = atoi(optarg);
+			break;
+
+      case 'u':
+        udp = 1;
+        break;
+        
+
+		default:
+			printf("usage: cmd [-p|-s][-n ##][-u]\n");
+			break;
+		}
+	}
+
+	if (source == -1) {
+		printf("usage: cmd [-p|-s][-n ##][-u]\n");
+		exit(1) ;
+	}
+
+	if (source == 1) 
+		printf("We're on the source\n");
+   /* here we need to create a source UDP socket */
+
+   /*TODO
+     Create a local socket
+     Create the address of the socket we want to address
+     sendto(socket, pmsg, length)
+    */
+
+   
+	else
+		printf("We're on the reciever\n");
+   /* here we need to create a reciever UDP socket */
+	if (nb_message != -1) {
+		if (source == 1)
+			printf("nb of messages to send : %d\n", nb_message);
+		else
+			printf("nb of messages to recieve : %d\n", nb_message);
+	} else {
+		if (source == 1) {
+			nb_message = 10 ;
+			printf("nb of messages to send = 10 by default\n");
+		} else
+		printf("nb of messages to send = inf\n");
+
+	}
+}
+
+void client_udp(int port, char* hostname){
+
+  int sock;
+  struct sockaddr_in servaddr;
+  socklen_t lg_adr_dist = sizeof(servaddr);
+  char M[30] = "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+  struct hostent* server; 
+  
+  /* creating the socket of designated specs */
+  if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+    perror("socket");
+    exit(1);
+  }
+  
+  /* create host address */
+  if ((server = gethostbyname(hostname)) == NULL) {
+    fprintf(stderr, "host not found\n");
+    exit(1);
+  }
+
+  memset(&servaddr, 0, sizeof(servaddr));
+  servaddr.sin_family = AF_INET;
+  servaddr.sin_port = htons(port);
+  memcpy(&servaddr.sin_addr, server->h_addr, server->h_length);
+
+  /* sending */
+
+  if (sendto(sock, M, 30, &servaddr, lg_adr_dist) < 0){
+    perror("sendto");
+  }
+    
+  close(sock);
+}
+
+
+void server_udp(){
+
+
+
+}
