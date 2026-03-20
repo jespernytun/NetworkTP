@@ -156,6 +156,7 @@ void client_udp(int port, char* hostname, int nbmsg, int lgmsg){
     if (sendto(sock, M, lgmsg, 0, (struct sockaddr *)&servaddr, lg_adr_dist) < 0) {
       perror("sendto");
     }
+    printf("sent: [%d %.*s]\n", (i+1), lgmsg, M);
     charmsg++;
     if (charmsg > 'z') charmsg = 'a'; /* Make sure we print characters and not whatever*/
   }
