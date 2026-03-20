@@ -23,7 +23,9 @@ données du réseau */
 
 /* Prototypes */
 void client_udp(int port, char* hostname, int nbmsg, int lgmsg); /* creates a udp client */
-void server_udp(int port, int nbmsg);
+void client_tcp(int port, char* hostname, int nbmsg, int lgmsg); /* creates a tcp client */
+void server_udp(int port, int nbmsg); /* creates udp server */
+void server_tcp(int port, int nbmsg); /* creates tcp server */
 
 
 int main (int argc, char **argv) {
@@ -97,6 +99,7 @@ int main (int argc, char **argv) {
 
    /* if UDP */
    if (udp == 1) {
+     printf("We're using UDP\n");
      if (source == 1) {
        printf("We're on the source\n");
 
@@ -118,8 +121,26 @@ int main (int argc, char **argv) {
      }
             
    } else { /* else TCP */
-     
-     printf("Sorry, TCP function not yet implemented\n");
+     printf("We're using TCP\n");
+     if (source == 1) {
+       printf("We're on the source\n");
+
+       if (lg_message == -1) {lg_message = 30;}
+       if (nb_message == -1) {nb_message = 10;}
+       
+       port = atoi(argv[argc-1]); /* We assign last argument as nb port*/
+       hostname = argv[argc-2]; /* We assign second to last argument as hostname*/
+
+       /* we call on our client function */
+       client_tcp(port, hostname, nb_message, lg_message);
+
+     } else { 
+       printf("We're on the reciever\n");
+       
+       port = atoi(argv[argc-1]); /* We assign last argument as nb port */
+
+       server_tcp(port, nb_message); 
+      }
    }
 
    return 0;
