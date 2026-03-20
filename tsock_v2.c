@@ -20,6 +20,7 @@ données du réseau */
 #include <string.h>
 
 #define MAX_MSG_LEN 1000
+#define MAX_WAITLIST 5
 
 /* Prototypes */
 void client_udp(int port, char* hostname, int nbmsg, int lgmsg); /* creates a udp client */
@@ -183,6 +184,7 @@ void client_udp(int port, char* hostname, int nbmsg, int lgmsg){
     if (sendto(sock, M, lgmsg, 0, (struct sockaddr *)&servaddr, lg_adr_dist) < 0) {
       perror("sendto");
     }
+    printf("sent: [%d %.*s]\n", (i+1), lgmsg, M);
     charmsg++;
     if (charmsg > 'z') charmsg = 'a'; /* Make sure we print characters and not whatever*/
   }
@@ -278,6 +280,7 @@ void client_tcp(int port, char* hostname, int nbmsg, int lgmsg){
     if (send(sock, M, lgmsg, 0) < 0) {
       perror("send");
     }
+    printf("sent: [%d %.*s]\n", (i+1), lgmsg, M);
     charmsg++;
     if (charmsg > 'z') charmsg = 'a'; /* Make sure we print characters and not whatever*/
   }
@@ -288,6 +291,7 @@ void server_tcp(int port, int nbmsg){
 
   /* definition of vaiables */
   int sock, n;
+  int connfd;
   int i = 0; /* increment */
   struct sockaddr_in servaddr, cliaddr;
   char pmsg[MAX_MSG_LEN];
@@ -312,8 +316,11 @@ void server_tcp(int port, int nbmsg){
     exit(1);
   }
 
+
+  listen(sock, MAX_WAITLIST);
+         
   /* accept connection request */
-  if (accept(sock, (struct sockaddr *)&cliaddr, lg_adr_dist) < 0){
+  if ((connfd = accept(sock, (struct sockaddr *)&cliaddr, &lg_adr_dist)) < 0){
     perror("accept");
     exit(1);
   }
@@ -323,15 +330,21 @@ void server_tcp(int port, int nbmsg){
   if (nbmsg == -1) {infmessages = 1;}
   while (infmessages || i < nbmsg) {
     
-    if ((n = recv(sock, pmsg, sizeof(pmsg), 0) < 0)) {
+    if (((n = recv(connfd, pmsg, sizeof(pmsg), 0)) < 0)) {
       perror("recv");
       exit(1);
+    }
+
+    if (n==0) {
+      printf("client disconnected\n");
+      break;
     }
 
     printf("received: [%d %.*s]\n", (i+1), n, pmsg);
     i++;
   }
-  
+
+  close(connfd);
   close(sock);
 
 }
