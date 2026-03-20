@@ -187,7 +187,7 @@ void server_udp(int port, int nbmsg){
     exit(1);
   }
 
-  /* receptiom */
+  /* reception */
 
   if (nbmsg == -1) {infmessages = 1;}
 
