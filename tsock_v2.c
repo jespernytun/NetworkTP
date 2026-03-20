@@ -246,7 +246,7 @@ void client_tcp(int port, char* hostname, int nbmsg, int lgmsg){
   memcpy(&servaddr.sin_addr, server->h_addr, server->h_length);
 
   /* sending a connection request */
-  if (connect(sock, (scokaddr_in *)&servaddr, lg_adr_dist) < 0){
+  if (connect(sock, (struct sockaddr *)&servaddr, lg_adr_dist) < 0){
     perror("connect");
     exit(1);
   }
@@ -292,7 +292,7 @@ void server_tcp(int port, int nbmsg){
   }
 
   /* accept connection request */
-  if (accept(sock, (sockaddr_in *)&cliaddr, lg_adr_dist) < 0){
+  if (accept(sock, (struct sockaddr *)&cliaddr, lg_adr_dist) < 0){
     perror("accept");
     exit(1);
   }
@@ -302,7 +302,7 @@ void server_tcp(int port, int nbmsg){
   if (nbmsg == -1) {infmessages = 1;}
   while (infmessages || i < nbmsg) {
     
-    if ((n = recv(sock, pmsg, sizeof(pmsg), 0) < 0) {
+    if ((n = recv(sock, pmsg, sizeof(pmsg), 0) < 0)) {
       perror("recv");
       exit(1);
     }
