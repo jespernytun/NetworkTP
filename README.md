@@ -2,7 +2,7 @@
 tsock client/server for UDP/TCP communication \
 
 How to compile \
-'''bash
+'''console
 git clone https://jespernytun/Network TP \
 /.tsockv1 [-p|-s][-n ##][-l ##][-u] \
 /.tsockv2 [-p|-s][-n ##][-l ##][-u] \
