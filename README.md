@@ -28,7 +28,7 @@ Versions 1–4 are progressive implementations building toward a single program,
 
 ---
 
-### tsockv1 — UDP
+### tsockv1: UDP
 
 First version. Implements a client and server using UDP.
 
@@ -37,7 +37,7 @@ void client_udp(int port, char* hostname, int nbmsg, int lgmsg);
 void server_udp(int port, int nbmsg);
 ```
 
-### tsockv2 — TCP
+### tsockv2: TCP
 
 Adds TCP support alongside the existing UDP implementation.
 
@@ -50,12 +50,59 @@ void server_tcp(int port, int nbmsg);
 
 > **Note:** This version was planned to add `-l` and `-n` flag support which was already implemented from v1.
 
-### tsockv4 — Forking
+### tsockv4: Forking
 
 The final version. Adds process forking so `tsock` can handle multiple connections simultaneously.
 
 ---
+## BAL: Mailbox
+This is a version that builds upon the last version and uses a intermerdiate server that stores the messages. This version is built upon the following datastructure
 
-## License
+**The head** is a struct acting as a point of entry and also stores the total number of mailboxes in the system
 
-[MIT](https://choosealicense.com/licenses/mit/)
+**The letterboxes** have their associated IDs that users can call upon to retrieve information. They keep track of how many messages they store.
+
+**The letters** are a struct containing the lenght of the message, the message itself and a pointer to the next message in line.
+
+```mermaid
+graph LR
+    BAL["BAL head"] -->|pfirstbox| B1
+
+    B1["boite_lettre\nID=1 | nb=3 | →"] -->|pnextbox| B2["boite_lettre\nID=2 | nb=1 | →"]
+    B2 -->|pnextbox| B3["boite_lettre\nID=3 | nb=2 | →"]
+    B3 -->|pnextbox| N0["NULL"]
+
+    B1 -->|pfirstmsg| M1A["une_msg\nmsg | →"]
+    M1A -->|pnextmsg| M1B["une_msg\nmsg | →"]
+    M1B -->|pnextmsg| M1C["une_msg\nmsg | →"]
+    M1C -->|pnextmsg| N1["NULL"]
+
+    B2 -->|pfirstmsg| M2A["une_msg\nmsg | →"]
+    M2A -->|pnextmsg| N2["NULL"]
+
+    B3 -->|pfirstmsg| M3A["une_msg\nmsg | →"]
+    M3A -->|pnextmsg| M3B["une_msg\nmsg | →"]
+    M3B -->|pnextmsg| N3["NULL"]
+```
+**The structs are defined as follwing**
+```c
+typedef struct bal_head {
+  int nb_boites;
+  struct boite_lettre* pfirstbox;
+} bal_head;
+
+typedef struct boite_lettre {
+  int box_ID;
+  int nb_msg;
+  struct une_msg* pfirstmsg;     /* POINTS TOWARDS THE MESSAGES   */
+  struct boite_lettre* pnextbox; /* POINTS TOWARDS NEXT LETTERBOX */
+} boite_lettre;
+
+typedef struct une_msg {
+  char msg[LG_MAX_MSG];
+  int lg_msg;
+  struct une_msg* pnextmsg;   /* NEXT MESSAGE */
+} une_msg;
+```
+---
+
