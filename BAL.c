@@ -37,10 +37,10 @@ void afficher_message (char *message, int lg) {
 // This function searches for the box with a user defined ID
 // If box doesn't yet exist, it will be created
 // Adds letter to the top of the letterbox
-void add_letter(bal_head BAL, int box_ID_dest, char* msg) {
+void add_letter(bal_head* BAL, int box_ID_dest, char* msg) {
   
   /* making an auxilliary*/
-  boite_lettre* aux = BAL.pfirstbox;
+  boite_lettre* aux = BAL->pfirstbox;
   boite_lettre* prev = NULL;
 
   while (aux != NULL) {
@@ -63,11 +63,11 @@ void add_letter(bal_head BAL, int box_ID_dest, char* msg) {
 
     // if prev is null, it means no boxes have been made yet
     // we add it to the head
-    if (prev == NULL) BAL.pfirstbox = new_box; // first boite a lettre
+    if (prev == NULL) BAL->pfirstbox = new_box; // first boite a lettre
     else prev->pnextbox = new_box;
 
     // we add to the box counter
-    BAL.nb_boites++;
+    BAL->nb_boites++;
     aux = new_box; // and we add the new_box to the end of the chain
   }
 
@@ -86,10 +86,10 @@ void add_letter(bal_head BAL, int box_ID_dest, char* msg) {
 // WARNING REQUIRES PRESTABLISHED TCP CONNECTION
 // WILL CLOSE TCP CONNECTION WHEN DONE READING
 // This function prints all letter of an associated box then deletes it
-void affiche_letter(bal_head BAL, int box_ID_dest, char* msg, int sock, int connfd) {
+void affiche_letter(bal_head* BAL, int box_ID_dest, char* msg, int sock, int connfd) {
   
   /* making an auxilliary*/
-  boite_lettre* aux = BAL.pfirstbox;
+  boite_lettre* aux = BAL->pfirstbox;
   boite_lettre* prev = NULL;
 
   /* searching box that we want to print */
@@ -122,13 +122,12 @@ void affiche_letter(bal_head BAL, int box_ID_dest, char* msg, int sock, int conn
   
   /* DELETE BOITE A LETTRES*/
   if (prev == NULL) {
-    BAL.pfirstbox = aux->pnextbox; // was first box
+    BAL->pfirstbox = aux->pnextbox; // was first box
   } else {
     prev->pnextbox = aux->pnextbox;
   }
   free(aux);
   
-  close(sock);
   close(connfd);
   
 }
