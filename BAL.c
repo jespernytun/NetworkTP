@@ -83,6 +83,8 @@ void add_letter(bal_head BAL, int box_ID_dest, char* msg) {
 }
 
 // READ_LETTER FUNCTION
+// WARNING REQUIRES PRESTABLISHED TCP CONNECTION
+// WILL CLOSE TCP CONNECTION WHEN DONE READING
 // This function prints all letter of an associated box then deletes it
 void affiche_letter(bal_head BAL, int box_ID_dest, char* msg, int sock, int connfd) {
   
