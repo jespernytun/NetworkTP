@@ -23,8 +23,8 @@ Versions 1–4 are progressive implementations building toward a single program,
 | `-u` | UDP mode (default: TCP) |
 | `-l <len>` | Message length (default: `30`) |
 | `-n <num>` | Number of messages (default: `10` for sender, infinite for receiver) |
-| `-p <port>` | Receiver mode — specify port |
-| `-s <host> <port>` | Sender mode — specify host and port |
+| `-p <port>` | Receiver mode |
+| `-s <host> <port>` | Sender mode |
 
 ---
 
