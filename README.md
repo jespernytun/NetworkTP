@@ -55,14 +55,19 @@ void server_tcp(int port, int nbmsg);
 The final version. Adds process forking so `tsock` can handle multiple connections simultaneously.
 
 ---
-## BAL: Mailbox
-This is a version that builds upon the last version and uses a intermerdiate server that stores the messages. This version is built upon the following datastructure
+## Part 2 — Mailbox system (BAL)
 
-**The head** is a struct acting as a point of entry and also stores the total number of mailboxes in the system
+A distributed mailbox server where senders deposit letters for named receivers, and receivers retrieve them on demand.
 
-**The letterboxes** have their associated IDs that users can call upon to retrieve information. They keep track of how many messages they store.
+```bash
+tsock -b <port>          # start mailbox server
+tsock -e<id> -n<n> <host> <port>   # send n letters to receiver <id>
+tsock -r<id> <host> <port>         # retrieve all letters for receiver <id>
+```
 
-**The letters** are a struct containing the lenght of the message, the message itself and a pointer to the next message in line.
+All exchanges use TCP. The BAL server handles connections sequentially (no fork in part 2).
+
+### Data structure
 
 ```mermaid
 graph LR
