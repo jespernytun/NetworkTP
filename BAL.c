@@ -84,7 +84,7 @@ void add_letter(bal_head BAL, int box_ID_dest, char* msg) {
 
 // READ_LETTER FUNCTION
 // This function prints all letter of an associated box then deletes it
-void affiche_letter(bal_head BAL, int box_ID_dest, char* msg) {
+void affiche_letter(bal_head BAL, int box_ID_dest, char* msg, int sock, int connfd) {
   
   /* making an auxilliary*/
   boite_lettre* aux = BAL.pfirstbox;
@@ -103,16 +103,30 @@ void affiche_letter(bal_head BAL, int box_ID_dest, char* msg) {
   if (aux == NULL) {
     /* NO BOX HAS BEEN FOUND */
     printf("Sorry, no new messages\n");
+    return;
   }
 
   // creating an auxilliary
   une_msg * auxmsg = aux->pfirstmsg;
-  while (auxmsg->pnextmsg!=NULL) {
+  while (auxmsg!=NULL) {
     afficher_message(auxmsg->msg, auxmsg->lg_msg);
+
+    if (send(sock, auxmsg->msg, auxmsg->lg_msg, 0) < 0) {
+      perror("send");
+    }
+    
     auxmsg = auxmsg->pnextmsg;
   }
   
   /* DELETE BOITE A LETTRES*/
-  prev = aux->pnextbox;
-    
+  if (prev == NULL) {
+    BAL.pfirstbox = aux->pnextbox; // was first box
+  } else {
+    prev->pnextbox = aux->pnextbox;
+  }
+  free(aux);
+  
+  close(sock);
+  close(connfd);
+  
 }
