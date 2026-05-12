@@ -106,7 +106,7 @@ graph LR
     M3A -->|pnextmsg| M3B["une_msg\nmsg | →"]
     M3B -->|pnextmsg| N3["NULL"]
 ```
-### Justifying our datastructre
+### Justifying our datastructure
 The idea is to create a datastructure that facilitates the emission and reception of data at for the BAL. The BAL keeps tracks of the total number of boxes, the boxes keep track of the total number of messages, and the messages themselves keep track of their own lengths. In particular, the fact that the messages themselves keep track of their length makes them easy to handle.
 
 ### The Protocol
@@ -130,7 +130,7 @@ After connecting with the bal and confirming yourself as a emittor, the BAL will
 After connecting with the bal and confirming yourself as a reciever, the BAL will send every message in the specified letterbox. Each message will be destroyed after sending, but **the mailbox itself will not be destroyed**. 
 
 #### Known shortcomings
-- If the BAL disconnects, the entrypoint to the BAL datastructure will be lost, and all the info will dissapear with it.
+- If the BAL disconnects, the entrypoint to the BAL datastructure will be lost, and all the info will disappear with it.
 - There is no function to remove a mailbox once created.
 - Forks have not yet been implemented, only one process can communicate with the program at the same time.
 
