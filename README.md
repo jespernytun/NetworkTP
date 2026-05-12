@@ -1,7 +1,8 @@
 # NetworkTP — INSA Toulouse
 
 > A school project by **Jesper Nytun** and **Tidiane Brient** at INSA Toulouse.
-> *Version française en bas.*
+> 
+> *[Version française en bas](#version-française)*
 ---
 
 ## Installation
@@ -157,3 +158,127 @@ Neither of us had ever been given a formal introduction to Git, or shared a code
 
 ---
 
+<a name="version-française"></a>
+
+---
+
+# NetworkTP — INSA Toulouse
+
+> Un projet scolaire réalisé par **Jesper Nytun** et **Tidiane Brient** à l'INSA Toulouse.
+
+---
+
+## Installation
+
+```bash
+git clone https://github.com/jespernytun/NetworkTP
+gcc tsock_v5.c -o tsock
+```
+
+### Exemple
+```bash
+./tsock -p -n 100 -l 512 localhost 5000    # Lancer le serveur TCP
+./tsock -s -n 100 -l 512 localhost 5000    # Lancer le client TCP
+```
+
+---
+
+## Partie 1 : tsock
+
+Les versions 1 à 4 sont des implémentations progressives menant vers un programme unique, `tsock`, capable d'envoyer des messages sur le réseau via **TCP** ou **UDP**.
+
+### Options (version finale : `tsockv4`)
+
+| Flag | Description |
+|------|-------------|
+| `-u` | Mode UDP (défaut : TCP) |
+| `-l <len>` | Longueur des messages (défaut : `30`) |
+| `-n <num>` | Nombre de messages (défaut : `10` pour l'émetteur, infini pour le récepteur) |
+| `-p` | Mode récepteur |
+| `-s` | Mode émetteur |
+
+---
+
+### tsockv1 : UDP
+Première version. Implémente un client et un serveur en UDP.
+
+### tsockv2 : TCP
+Ajoute le support TCP en parallèle de l'implémentation UDP existante.
+
+### tsockv3
+> **Note :** Cette version devait ajouter le support des flags `-l` et `-n`, déjà implémentés depuis la v1.
+
+### tsockv4 : Forking
+Version finale. Ajoute le fork de processus pour que `tsock` puisse gérer plusieurs connexions simultanément.
+
+---
+
+## Partie 2 : Système de boîte aux lettres (BAL)
+
+Un serveur de boîtes aux lettres distribué où les émetteurs déposent des lettres pour des récepteurs identifiés, qui les récupèrent à la demande.
+
+```bash
+./tsock -b 5000                          # Démarrer le serveur BAL
+./tsock -e 1 -n 5 -l 30 localhost 5000   # Envoyer 5 lettres au récepteur 1
+./tsock -r 1 localhost 5000              # Récupérer les lettres en tant que récepteur 1
+```
+
+Tous les échanges utilisent TCP. Le serveur BAL gère les connexions de manière séquentielle (pas de fork dans la partie 2).
+
+### Structure de données
+
+Le BAL maintient une liste chaînée de boîtes, chacune contenant une liste chaînée de messages.
+
+### Justification de la structure de données
+
+L'idée est de créer une structure qui facilite l'émission et la réception de données pour la BAL. La BAL garde le compte du nombre total de boîtes, les boîtes gardent le compte du nombre total de messages, et les messages eux-mêmes conservent leur propre longueur — ce qui les rend faciles à manipuler.
+
+### Le Protocole
+
+Notre protocole repose sur un message d'initialisation envoyé à chaque connexion :
+
+```c
+struct message_init {
+  int emetteur;  // Définit si l'on souhaite envoyer ou recevoir
+  int lg_msg;    // Longueur des messages à envoyer
+  int nb_msg;    // Nombre de messages à envoyer
+  int id_recept; // ID de la boîte aux lettres cible
+};
+```
+
+### Communication avec la BAL
+
+#### Émission
+Après connexion et identification comme émetteur, la BAL se prépare à recevoir. Après une seconde d'attente, les messages sont envoyés et stockés en ordre FIFO dans la boîte du récepteur. Si la boîte n'existe pas, **elle est créée automatiquement**.
+
+#### Réception
+Après connexion et identification comme récepteur, la BAL envoie toutes les lettres de la boîte concernée. Chaque message est détruit après envoi, mais **la boîte aux lettres elle-même n'est pas supprimée**.
+
+#### Limitations connues
+- Si la BAL s'arrête, le point d'entrée de la structure de données est perdu et toutes les informations disparaissent avec.
+- Il n'existe pas de fonction pour supprimer une boîte aux lettres.
+- Le fork n'est pas encore implémenté — un seul processus peut communiquer avec le programme à la fois.
+
+---
+
+## Ce que nous avons appris
+
+#### Implémentation de listes chaînées en C
+Bon rappel et bonne introduction aux listes chaînées, même si c'est assez similaire à ADA.
+
+**À retenir :** Pas toujours une révélation — mais une bonne pratique.
+
+#### Conception de protocoles
+Concevoir et implémenter ses propres protocoles est une approche d'apprentissage très différente de l'analyse théorique des différences entre OSI et TCP/IP. La conception de notre structure `message_init` s'est révélée être un excellent moyen de mieux comprendre les architectures existantes.
+
+**À retenir :** La conception de protocoles, c'est difficile.
+
+#### Forks et processus
+Implémenter le fork dans la version v4 de tsock a été un défi bien plus grand qu'anticipé — trois heures rien que pour le faire fonctionner. Bon rappel sur les PIDs et bonne introduction aux différences entre serveurs concurrents et séquentiels.
+
+**À retenir :** Les processus enfants reçoivent la valeur 0 par convention — ça nous a pris longtemps à comprendre.
+
+#### Git et Codespaces
+Aucun de nous n'avait jamais reçu de formation formelle sur Git, ni partagé une base de code à distance. Le TP étant conçu avec de nombreuses itérations en tête, Git s'est imposé naturellement — une expérience précieuse, même si cela nous a probablement coûté du temps.
+
+**À retenir :** GitHub n'est pas intuitif, mais excellent pour la collaboration.
