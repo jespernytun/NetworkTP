@@ -17,21 +17,18 @@
 /* pour la gestion des erreurs */
 #include <errno.h>
 #include <string.h>
-#include "BAL-corr.c"
-
+#include "BAL.c"
 
 
 #define MAX_MSG_LEN 1000
 #define MAX_WAITLIST 5
 
-
-
-
+// Message to initialize conversation with mailbox
 struct message_init {
-  int emetteur;
-  int lg_msg;
-  int nb_msg;
-  int id_recept;
+  int emetteur; // Defines if you wish to send or recieve messages
+  int lg_msg;   // Lenght of messages to send to mailbox
+  int nb_msg;	// Nb of messages to send to mailbox
+  int id_recept; // ID of the recieving mailbox
 };
 
 /* Prototypes */
@@ -41,6 +38,7 @@ void server_udp(int port, int nbmsg);
 void server_tcp(int port, int nbmsg);
 void construire_message (char *message, char motif, int lg);
 void afficher_message (char *message, int lg);
+// BAL from French "Bôite à lettres" meaning mailbox
 void bal_e(int port, char* hostname, int nbmsg, int lgmsg, struct message_init Mi, int id_recept);
 void bal_r(int port, char* hostname, struct message_init Mi, int id_recept);
 void create_bal(int port);
@@ -59,7 +57,10 @@ int main (int argc, char **argv) {
   int bal = 0;
   int mode_bal = 0;
   int recepteur;
-   
+
+/*---------------------------------------------------------------------------------*/
+/* ----------------------- Option/Flag Management -------------------------------- */
+/*---------------------------------------------------------------------------------*/
 	while ((c = getopt(argc, argv, "psun:l:e:r:b")) != -1) {
 		switch (c) {
 		case 'p':
@@ -207,6 +208,7 @@ int main (int argc, char **argv) {
 /*---------------------------------------------------------------------------------*/
 /* -----------------------UDP client and server----------------------------------- */
 /*---------------------------------------------------------------------------------*/
+
 void client_udp(int port, char* hostname, int nbmsg, int lgmsg){
 
   int sock;
@@ -378,7 +380,6 @@ void server_tcp(int port, int nbmsg){
     printf("received: [%d %.*s]\n", (i+1), n, pmsg);
     i++;
   }
-
   close(connfd);
   close(sock);
 }
@@ -427,12 +428,10 @@ void bal_e(int port, char* hostname, int nbmsg, int lgmsg, struct message_init M
     perror("send Mi");
     exit(1);
   }
-
-  /* FIX: sleep takes seconds, not milliseconds — use sleep(1) not sleep(2000) */
+  
   sleep(1);
 
-
-  /*Construction du message à envoyer*/
+  /*Building the message to send*/
   construire_message(M,charmsg,lgmsg);
 
   /* Send the messages */
@@ -479,7 +478,7 @@ void bal_r(int port, char* hostname, struct message_init Mi, int id_recept){
   servaddr.sin_port = htons(port);
   memcpy(&servaddr.sin_addr, server->h_addr_list[0], server->h_length);
 
-  /* FIX: connect() does not return a new fd — just check < 0 */
+
   if (connect(sock, (struct sockaddr *)&servaddr, lg_adr_dist) < 0){
     perror("connect");
     exit(1);
@@ -495,7 +494,6 @@ void bal_r(int port, char* hostname, struct message_init Mi, int id_recept){
     exit(1);
   }
 
-  /* FIX: sleep(1) not sleep(2000) */
   sleep(1);
 
   printf("RECEPTION : Demande de recuperation des lettres par le recepteur %d port=%d, TP=tcp, dest=%s\n",
@@ -565,8 +563,7 @@ void create_bal(int port){
       perror("accept");
       exit(1);
     }
-
-    /* FIX: recv on connfd, not on sock (listening socket) */
+ 
     if ((n = recv(connfd, &pMi, sizeof(pMi), 0)) < 0) {
       perror("recv Mi");
       close(connfd);
@@ -578,9 +575,7 @@ void create_bal(int port){
     if (pMi.emetteur == 1) {
       /* === EMITTER side === */
       lgmsg = pMi.lg_msg;
-      nbmsg = pMi.nb_msg;
-
-     
+      nbmsg = pMi.nb_msg;     
 
       for (i=0;i < nbmsg;i++){
         n = recv(connfd, pmsg, lgmsg, 0);
@@ -593,7 +588,6 @@ void create_bal(int port){
         printf("PUITS : Reception et stockage lettre n°%d pour le recepteur n°%d [%.*s]\n",
                (i+1), recepteur, n, pmsg);
 
-        /* FIX: pass n (actual received size) to add_letter */
         add_letter(BAL, recepteur, pmsg, n);
         
       }
@@ -605,7 +599,7 @@ void create_bal(int port){
       printf("PUITS : Envoi des lettres au recepteur %d\n", recepteur);
       affiche_letter(BAL, recepteur, connfd);
 
-      /* FIX: BAL closes the connection after sending all letters */
+      
       close(connfd);
     }
   }
@@ -615,7 +609,7 @@ void create_bal(int port){
 }
 
 /*---------------------------------------------------------------------------------*/
-/* -----------------------Message building-----------------------------------------*/
+/* ----------------------- Message building ---------------------------------------*/
 /*---------------------------------------------------------------------------------*/
 
 void construire_message (char *message, char motif, int lg) {
