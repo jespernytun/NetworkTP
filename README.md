@@ -8,8 +8,13 @@
 
 ```bash
 git clone https://github.com/jespernytun/NetworkTP
+gcc tsock_v5.c -o tsock
 ```
-
+## Example
+```bash
+./tsock -p -n 100 -l 512        # Start TCP server
+./tsock -s -n 100 -l 512        # Start TCP client
+```
 ---
 
 ## tsock
