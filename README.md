@@ -135,22 +135,22 @@ After connecting with the bal and confirming yourself as a reciever, the BAL wil
 
 ---
 ## What we have learned
-#### Linked List Implementation in C
+### Linked List Implementation in C
 Great refresher and introduction to linked lists, even though it's quite similar to ADA.
 
 **Key Takeaway** Great practice.
 
-#### Protocol Design
+### Protocol Design
 Trying to think through and create your own protocols is a whole different approach to learning than analyzing the differences between OSI and TCP/IP architectures. Conceptualizing our `message_init` structure still proved to be a useful way to understand already established architectures, as well as dive deeper into protocol design.
 
 **Key Takeaway:** Protocol design is hard.
 
-#### Forks and Processes
+### Forks and Processes
 Establishing version v4 of tsock with a forking implementation was a much bigger challenge than first anticipated, taking us a whole three hours just to get it working. Great refresher on PIDs and a good introduction to the differences between concurrent and sequential servers.
 
 **Key Takeaway:** Child processes get assigned 0 by convention — that took a long time to figure out.
 
-#### Git and Codespaces
+### Git and Codespaces
 Neither of us had ever been given a formal introduction to Git, or shared a codebase remotely before. The TP being made with many iterations in mind, and finalized with a README, made working with Git a natural choice — giving us valuable experience even though it probably cost us a fair amount of time.
 
 **Key Takeaway:** GitHub isn't intuitive, but great for collaboration.
