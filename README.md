@@ -10,14 +10,14 @@
 git clone https://github.com/jespernytun/NetworkTP
 gcc tsock_v5.c -o tsock
 ```
-## Example
+### Example
 ```bash
-./tsock -p -n 100 -l 512        # Start TCP server
-./tsock -s -n 100 -l 512        # Start TCP client
+./tsock -p -n 100 -l 512 localhost 5000    # Start TCP server
+./tsock -s -n 100 -l 512 localhost 5000    # Start TCP client
 ```
 ---
 
-## tsock
+## Part 1: tsock
 
 Versions 1–4 are progressive implementations building toward a single program, `tsock`, capable of sending messages over the internet via **TCP** or **UDP**.
 
@@ -60,19 +60,30 @@ void server_tcp(int port, int nbmsg);
 The final version. Adds process forking so `tsock` can handle multiple connections simultaneously.
 
 ---
-## Part 2 — Mailbox system (BAL)
+## Part 2: Mailbox system (BAL)
 
 A distributed mailbox server where senders deposit letters for named receivers, and receivers retrieve them on demand.
 
 ```bash
 tsock -b <port>          # start mailbox server
-tsock -e<id> -n<n> <host> <port>   # send n letters to receiver <id>
-tsock -r<id> <host> <port>         # retrieve all letters for receiver <id>
+tsock -e <id> -n<n> <host> <port>   # send n letters to receiver <id>
+tsock -r <id> <host> <port>         # retrieve all letters for receiver <id>
+```
+### Examples
+```bash
+   # Terminal 1 — start BAL
+   ./tsock -b 5000
+   
+   # Terminal 2 — send 5 letters to receiver 1
+   ./tsock -e 1 -n 5 -l 30 localhost 5000
+   
+   # Terminal 3 — retrieve letters as receiver 1
+   ./tsock -r 1 localhost 5000
 ```
 
 All exchanges use TCP. The BAL server handles connections sequentially (no fork in part 2).
 
-### Data structure
+### Data Structure
 
 ```mermaid
 graph LR
@@ -94,25 +105,37 @@ graph LR
     M3A -->|pnextmsg| M3B["une_msg\nmsg | →"]
     M3B -->|pnextmsg| N3["NULL"]
 ```
-**The structs are defined as follwing**
+### Justifying our datastructre
+The idea is to create a datastructure that facilitates the emission and reception of data at for the BAL. The BAL keeps tracks of the total number of boxes, the boxes keep track of the total number of messages, and the messages themselves keep track of their own lengths. In particular, the fact that the messages themselves keep track of their length makes them easy to handle.
+
+### The Protocol
+Our Protocol is designed around the following initialization message
+
 ```c
-typedef struct bal_head {
-  int nb_boites;
-  struct boite_lettre* pfirstbox;
-} bal_head;
-
-typedef struct boite_lettre {
-  int box_ID;
-  int nb_msg;
-  struct une_msg* pfirstmsg;     /* POINTS TOWARDS THE MESSAGES   */
-  struct boite_lettre* pnextbox; /* POINTS TOWARDS NEXT LETTERBOX */
-} boite_lettre;
-
-typedef struct une_msg {
-  char msg[LG_MAX_MSG];
-  int lg_msg;
-  struct une_msg* pnextmsg;   /* NEXT MESSAGE */
-} une_msg;
+struct message_init {
+  int emetteur; // Defines if you wish to send or recieve messages
+  int lg_msg;   // Length of messages to send to mailbox
+  int nb_msg;	// Nb of messages to send to mailbox
+  int id_recept; // ID of the recieving mailbox
+};
 ```
+When establishing a connection with a BAL, the sender/receptor will always send an initialization message, informing the BAL on it's intentions. In this message it will declare if it seeks to send (or recieve), and if so the length and number of messages it plans on sending. It also forwards the ID of the mailbox it wants to engage with.
+
+### Communication with the BAL
+#### Emission
+After connecting with the bal and confirming yourself as a emittor, the BAL will prepare for reception. After waiting one second, you will be sending your specified number of messages of a specified length (default 10/30 if not specified). The BAL will stack the letters one by one in the mailbox marked by your ID, in order FIFO. If the mailbox is not found **a new mailbox will be created**.
+
+#### Reception
+After connecting with the bal and confirming yourself as a reciever, the BAL will send every message in the specified letterbox. Each message will be destroyed after sending, but **the mailbox itself will not be destroyed**. 
+
+#### Known shortcomings
+- If the BAL disconnects, the entrypoint to the BAL datastructure will be lost, and all the info will dissapear with it.
+- There is no function to remove a mailbox once created.
+- Forks have not yet been implemented, only one process can communicate with the program at the same time.
+
+
+## What we have learnt
+
+
 ---
 
