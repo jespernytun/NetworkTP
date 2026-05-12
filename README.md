@@ -227,7 +227,26 @@ Tous les échanges utilisent TCP. Le serveur BAL gère les connexions de manièr
 
 ### Structure de données
 
-Le BAL maintient une liste chaînée de boîtes, chacune contenant une liste chaînée de messages.
+```mermaid
+graph LR
+    BAL["BAL head"] -->|pfirstbox| B1
+
+    B1["boite_lettre\nID=1 | nb=3 | →"] -->|pnextbox| B2["boite_lettre\nID=2 | nb=1 | →"]
+    B2 -->|pnextbox| B3["boite_lettre\nID=3 | nb=2 | →"]
+    B3 -->|pnextbox| N0["NULL"]
+
+    B1 -->|pfirstmsg| M1A["une_msg\nmsg | →"]
+    M1A -->|pnextmsg| M1B["une_msg\nmsg | →"]
+    M1B -->|pnextmsg| M1C["une_msg\nmsg | →"]
+    M1C -->|pnextmsg| N1["NULL"]
+
+    B2 -->|pfirstmsg| M2A["une_msg\nmsg | →"]
+    M2A -->|pnextmsg| N2["NULL"]
+
+    B3 -->|pfirstmsg| M3A["une_msg\nmsg | →"]
+    M3A -->|pnextmsg| M3B["une_msg\nmsg | →"]
+    M3B -->|pnextmsg| N3["NULL"]
+```
 
 ### Justification de la structure de données
 
