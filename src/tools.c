@@ -1,4 +1,4 @@
-include "tools.h"
+#include "tools.h"
 
 /* Function that prints a message to the terminal */
 void afficher_message (char *message, int lg) {
