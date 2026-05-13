@@ -26,7 +26,7 @@ NetworkTP/
 
 ```bash
 git clone https://github.com/jespernytun/NetworkTP
-gcc tsock.c -o tsock
+make
 ```
 
 ### Example
