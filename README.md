@@ -8,15 +8,6 @@
 ## Installation
 
 ```bash
-git clone https://github.com/jespernytun/NetworkTP
-gcc tsock.c -o tsock
-```
-### Example
-```bash
-./tsock -p -n 100 -l 512 localhost 5000    # Start TCP server
-./tsock -s -n 100 -l 512 localhost 5000    # Start TCP client
-```
-```bash
 NetworkTP/
 ├── include/
 │   ├── config.h
@@ -31,6 +22,17 @@ NetworkTP/
 │   ├── BAL-mgmt.c
 │   └── BAL-hosts.c
 └── Makefile
+```
+
+```bash
+git clone https://github.com/jespernytun/NetworkTP
+gcc tsock.c -o tsock
+```
+
+### Example
+```bash
+./tsock -p -n 100 -l 512 localhost 5000    # Start TCP server
+./tsock -s -n 100 -l 512 localhost 5000    # Start TCP client
 ```
 
 ---
