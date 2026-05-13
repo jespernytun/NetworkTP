@@ -25,18 +25,18 @@
 /* -----------------------BAL mode: emitter----------------------------------------*/
 /*---------------------------------------------------------------------------------*/
 
-void bal_e(int port, char* hostname, int nbmsg, int lgmsg, struct message_init Mi, int id_recept)
+void bal_e(int port, char* hostname, int nbmsg, int lgmsg, struct message_init Mi, int id_recept);
 
 /*---------------------------------------------------------------------------------*/
 /* -----------------------BAL mode: receptor---------------------------------------*/
 /*---------------------------------------------------------------------------------*/
 
-void bal_r(int port, char* hostname, struct message_init Mi, int id_recept)
+void bal_r(int port, char* hostname, struct message_init Mi, int id_recept);
 
 /*---------------------------------------------------------------------------------*/
 /* -----------------------BAL mode: BAL creation-----------------------------------*/
 /*---------------------------------------------------------------------------------*/
 
-void create_bal(int port)
+void create_bal(int port);
 
 #endif
