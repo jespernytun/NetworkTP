@@ -9,7 +9,7 @@
 
 ```bash
 git clone https://github.com/jespernytun/NetworkTP
-gcc tsock_v5.c -o tsock
+gcc tsock.c -o tsock
 ```
 ### Example
 ```bash
@@ -164,7 +164,7 @@ Neither of us had ever been given a formal introduction to Git, or shared a code
 
 # NetworkTP — INSA Toulouse
 
-> Un projet scolaire réalisé par **Jesper Nytun** et **Tidiane Brient** à l'INSA Toulouse.
+> Un projet réalisé par **Jesper Nytun** et **Tidiane Brient** à l'INSA Toulouse.
 
 ---
 
@@ -172,7 +172,7 @@ Neither of us had ever been given a formal introduction to Git, or shared a code
 
 ```bash
 git clone https://github.com/jespernytun/NetworkTP
-gcc tsock_v5.c -o tsock
+gcc tsock.c -o tsock
 ```
 
 ### Exemple
