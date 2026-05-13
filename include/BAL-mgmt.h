@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #include "tools.h"
-#inculde "config.h"
+#include "config.h"
 
 
 /* linked list data type*/
