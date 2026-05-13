@@ -1,5 +1,5 @@
-#ifndef CONFIG
-#define CONFIG
+#ifndef NETWORK_CONFIG_TP
+#define NETWORK_CONFIG_TP
 
 #define MAX_MSG_LEN 1000
 #define MAX_WAITLIST 5
