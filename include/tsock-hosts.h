@@ -30,13 +30,13 @@
 /* -----------------------UDP client and server----------------------------------- */
 /*---------------------------------------------------------------------------------*/
 
-void client_udp(int port, char* hostname, int nbmsg, int lgmsg)
+void client_udp(int port, char* hostname, int nbmsg, int lgmsg);
 
-void server_udp(int port, int nbmsg)
+void server_udp(int port, int nbmsg);
 
-void client_tcp(int port, char* hostname, int nbmsg, int lgmsg)
+void client_tcp(int port, char* hostname, int nbmsg, int lgmsg);
 
-void server_tcp(int port, int nbmsg)
+void server_tcp(int port, int nbmsg);
 
 
 
