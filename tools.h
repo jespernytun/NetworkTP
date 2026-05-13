@@ -1,5 +1,5 @@
-#ifndef TOOLS
-#define TOOLS
+#ifndef NETWORK_TOOLS_TP
+#define NETWORK_TOOLS_TP
 
 #include <stdlib.h>
 #include <stdio.h>
