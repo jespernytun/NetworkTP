@@ -33,11 +33,11 @@ typedef struct une_msg {
 
 
 // ADD_LETTER FUNCTION
-void add_letter(bal_head* BAL, int box_ID_dest, char* msg, int lg_msg)
+void add_letter(bal_head* BAL, int box_ID_dest, char* msg, int lg_msg);
 
 // AFFICHE_LETTER FUNCTION
 // Sends all letters of a box over the socket, then frees the messages
 
-void affiche_letter(bal_head* BAL, int box_ID_dest, int sock)
+void affiche_letter(bal_head* BAL, int box_ID_dest, int sock);
 
 #endif
