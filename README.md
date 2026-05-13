@@ -16,6 +16,23 @@ gcc tsock.c -o tsock
 ./tsock -p -n 100 -l 512 localhost 5000    # Start TCP server
 ./tsock -s -n 100 -l 512 localhost 5000    # Start TCP client
 ```
+```bash
+NetworkTP/
+├── include/
+│   ├── config.h
+│   ├── tools.h
+│   ├── tsock-hosts.h
+│   ├── BAL-mgmt.h
+│   └── BAL-hosts.h
+├── src/
+│   ├── main.c
+│   ├── tools.c
+│   ├── tsock-hosts.c
+│   ├── BAL-mgmt.c
+│   └── BAL-hosts.c
+└── Makefile
+```
+
 ---
 
 ## Part 1: tsock
