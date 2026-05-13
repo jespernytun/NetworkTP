@@ -175,11 +175,6 @@ Establishing version v4 of tsock with a forking implementation was a much bigger
 
 **Key Takeaway:** Child processes get assigned 0 by convention — that took a long time to figure out.
 
-### Git and Codespaces
-Neither of us had ever been given a formal introduction to Git, or shared a codebase remotely before. The TP being made with many iterations in mind, and finalized with a README, made working with Git a natural choice — giving us valuable experience even though it probably cost us a fair amount of time.
-
-**Key Takeaway:** GitHub isn't intuitive, but great for collaboration.
-
 ---
 
 <a name="version-française"></a>
